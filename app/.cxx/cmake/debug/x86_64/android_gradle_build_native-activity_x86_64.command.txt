@@ -1,0 +1,7 @@
+Executable : /Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
+arguments : 
+-C
+/Users/gert/AndroidStudioProjects/NativeActivity/app/.cxx/cmake/debug/x86_64
+native-activity
+jvmArgs : 
+

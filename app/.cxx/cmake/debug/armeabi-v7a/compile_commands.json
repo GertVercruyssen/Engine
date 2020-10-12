@@ -1,0 +1,13 @@
+[
+{
+  "directory": "/Users/gert/AndroidStudioProjects/NativeActivity/app/.cxx/cmake/debug/armeabi-v7a",
+  "command": "/Users/gert/Library/Android/sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ --target=armv7-none-linux-androideabi16 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -Dnative_activity_EXPORTS -I/Users/gert/Library/Android/sdk/ndk/21.2.6472646/sources/android/native_app_glue  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security   -std=gnu++11 -Wall -Werror -O0 -fno-limit-debug-info  -fPIC   -o CMakeFiles/native-activity.dir/main.cpp.o -c /Users/gert/AndroidStudioProjects/NativeActivity/app/src/main/cpp/main.cpp",
+  "file": "/Users/gert/AndroidStudioProjects/NativeActivity/app/src/main/cpp/main.cpp"
+},
+
+{
+  "directory": "/Users/gert/AndroidStudioProjects/NativeActivity/app/.cxx/cmake/debug/armeabi-v7a",
+  "command": "/Users/gert/Library/Android/sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang --target=armv7-none-linux-androideabi16 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/darwin-x86_64/sysroot   -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC   -o CMakeFiles/native_app_glue.dir/Users/gert/Library/Android/sdk/ndk/21.2.6472646/sources/android/native_app_glue/android_native_app_glue.c.o   -c /Users/gert/Library/Android/sdk/ndk/21.2.6472646/sources/android/native_app_glue/android_native_app_glue.c",
+  "file": "/Users/gert/Library/Android/sdk/ndk/21.2.6472646/sources/android/native_app_glue/android_native_app_glue.c"
+}
+]

@@ -1,0 +1,4 @@
+#Tue Oct 06 18:29:12 JST 2020
+base.0=/Users/gert/AndroidStudioProjects/NativeActivity/app/build/intermediates/dex/debug/mergeDexDebug/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

@@ -3,3 +3,13 @@
 0	782	1601976527	CMakeFiles/native-activity.dir/main.cpp.o	10efb65c792f739c
 392	956	1601976527	libnative_app_glue.a	3dcec50820e6f699
 956	1258	1601976527	/Users/gert/AndroidStudioProjects/NativeActivity/app/build/intermediates/cmake/debug/obj/x86/libnative-activity.so	4af85717913e3426
+2	294	1602557849	CMakeFiles/native_app_glue.dir/Users/gert/Library/Android/sdk/ndk/21.2.6472646/sources/android/native_app_glue/android_native_app_glue.c.o	9b487521ded5e0e5
+294	395	1602557849	libnative_app_glue.a	3dcec50820e6f699
+1	572	1602557849	CMakeFiles/native-activity.dir/main.cpp.o	10efb65c792f739c
+572	898	1602557849	/Users/gert/AndroidStudioProjects/NativeActivity/app/build/intermediates/cmake/debug/obj/x86/libnative-activity.so	4af85717913e3426
+4	603	1602559852	CMakeFiles/native-activity.dir/main.cpp.o	10efb65c792f739c
+604	860	1602559852	/Users/gert/AndroidStudioProjects/NativeActivity/app/build/intermediates/cmake/debug/obj/x86/libnative-activity.so	4af85717913e3426
+2	1212	1602566855	CMakeFiles/native-activity.dir/main.cpp.o	10efb65c792f739c
+1213	1461	1602566855	/Users/gert/AndroidStudioProjects/NativeActivity/app/build/intermediates/cmake/debug/obj/x86/libnative-activity.so	4af85717913e3426
+1	639	1602567705	CMakeFiles/native-activity.dir/main.cpp.o	10efb65c792f739c
+639	820	1602567705	/Users/gert/AndroidStudioProjects/NativeActivity/app/build/intermediates/cmake/debug/obj/x86/libnative-activity.so	4af85717913e3426

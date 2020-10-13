@@ -163,7 +163,7 @@ static void engine_draw_frame(struct engine* engine) {
     }
 
     // Just fill the screen with a color.
-    glClearColor(((float)engine->state.x)/engine->width, (float)engine->state.counter/1000 ,
+    glClearColor(((float)engine->state.x)/engine->width, (float)(engine->state.counter%100)/100 ,
                  ((float)engine->state.y)/engine->height, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 

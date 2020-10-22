@@ -22,7 +22,7 @@ add_library(native_app_glue STATIC
     ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 
 # now build app's shared lib
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -Wall -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O2 -Wall -Werror")
 
 # Export ANativeActivity_onCreate(),
 # Refer to: https://github.com/android-ndk/ndk/issues/381.
@@ -38,6 +38,4 @@ target_include_directories(native-activity PRIVATE
 target_link_libraries(native-activity
     android
     native_app_glue
-    EGL
-    GLESv1_CM
     log)

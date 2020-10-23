@@ -331,8 +331,8 @@ bool InitVulkan(android_app* app) {
       .apiVersion = VK_MAKE_VERSION(1, 0, 0),
       .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
       .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-      .pApplicationName = "tutorial04_first_window",
-      .pEngineName = "tutorial",
+      .pApplicationName = "VulkanEngine",
+      .pEngineName = "VulkanEngine",
   };
 
   // create a device

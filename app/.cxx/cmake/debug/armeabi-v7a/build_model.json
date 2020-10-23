@@ -1,0 +1,73 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window",
+      "sdkFolder": "/Users/gert/Library/Android/sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app",
+      "makeFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/.cxx",
+      "cxxFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx",
+      "ndkFolder": "/Users/gert/Library/Android/sdk/ndk/21.3.6528147",
+      "ndkVersion": "21.3.6528147",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [
+      "-DANDROID_TOOLCHAIN\u003dclang",
+      "-DANDROID_STL\u003dc++_static"
+    ],
+    "cFlagList": [],
+    "cppFlagsList": [],
+    "variantName": "debug",
+    "soFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/cmake/debug/lib",
+    "objFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/cmake/debug/obj",
+    "jsonFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug",
+    "gradleBuildOutputFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A",
+      "X86",
+      "X86_64"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "ARMEABI_V7A",
+  "abiPlatformVersion": 24,
+  "cxxBuildFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a",
+  "jsonFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a/android_gradle_build.json",
+  "gradleBuildOutputFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug/armeabi-v7a",
+  "objFolder": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/cmake/debug/obj/armeabi-v7a",
+  "buildCommandFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a/build_command.txt",
+  "buildOutputFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a/build_output.txt",
+  "modelOutputFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a/build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug/armeabi-v7a/CMakeLists.txt",
+    "toolchainWrapperFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug/armeabi-v7a/android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug/armeabi-v7a/build_generation_state.json",
+    "cacheKeyFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug/armeabi-v7a/compiler_cache_key.json",
+    "compilerCacheUseFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug/armeabi-v7a/compiler_cache_use.json",
+    "compilerCacheWriteFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug/armeabi-v7a/compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cxx/debug/armeabi-v7a/compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a/json_generation_record.json",
+  "compileCommandsJsonFile": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a/compile_commands.json"
+}

@@ -1,0 +1,4 @@
+/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86/CMakeFiles/edit_cache.dir
+/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86/CMakeFiles/rebuild_cache.dir
+/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86/CMakeFiles/vktuts.dir
+/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86/CMakeFiles/app-glue.dir

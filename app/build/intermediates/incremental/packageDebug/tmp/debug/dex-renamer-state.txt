@@ -1,4 +1,4 @@
-#Fri Oct 23 14:31:31 JST 2020
+#Fri Oct 23 16:51:48 JST 2020
 base.0=/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/dex/debug/mergeProjectDexDebug/out/classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

@@ -20,3 +20,5 @@
 10	1363	0	CMakeFiles/vktuts.dir/src/main/jni/AndroidMain.cpp.o	8755571a5cb659fb
 9	1965	0	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	2c9c71942fa91994
 1965	2391	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	4daafa0980f94a2a
+13	2305	0	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	2c9c71942fa91994
+2305	2931	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	4daafa0980f94a2a

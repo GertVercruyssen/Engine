@@ -40,17 +40,28 @@ static const char* kTAG = "Vulkan-Tutorial04";
 
 // Global Variables ...
 struct VulkanDeviceInfo {
-  bool initialized_;
+    bool initialized_;
 
-  VkInstance instance_;
-  VkPhysicalDevice gpuDevice_;
-  VkDevice device_;
-  uint32_t queueFamilyIndex_;
+    VkInstance instance_;
+    VkPhysicalDevice gpuDevice_;
+    VkDevice device_;
+    uint32_t queueFamilyIndex_;
 
-  VkSurfaceKHR surface_;
-  VkQueue queue_;
+    VkSurfaceKHR surface_;
+    VkQueue queue_;
 };
 VulkanDeviceInfo device;
+
+//validation layers
+const std::vector<const char*> validationLayers = {
+        "VK_LAYER_KHRONOS_validation"
+};
+
+#ifdef NDEBUG
+    const bool enableValidationLayers = false;
+#else
+    const bool enableValidationLayers = true;
+#endif
 
 struct VulkanSwapchainInfo {
   VkSwapchainKHR swapchain_;
@@ -78,6 +89,19 @@ VulkanRenderInfo render;
 
 // Android Native App pointer...
 android_app* androidAppCtx = nullptr;
+
+bool CheckValidationLayerSupport()
+{
+    unsigned int layercount;
+    vkEnumerateInstanceLayerProperties(&layercount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(layercount);
+    vkEnumerateInstanceLayerProperties(&layercount,availableLayers.data());
+
+    
+
+    return false;
+}
 
 /*
  * setImageLayout():

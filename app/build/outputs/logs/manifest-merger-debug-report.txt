@@ -1,12 +1,12 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-26:12
-INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-26:12
-INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-26:12
-INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-26:12
-INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-26:12
-INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-26:12
-INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-26:12
+ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-27:12
+INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-27:12
+INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-27:12
+INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-27:12
+INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-27:12
+INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-27:12
+INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:3:1-27:12
 	package
 		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:4:9-31
 		INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml
@@ -22,13 +22,13 @@ INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/
 		INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml
 		INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml
 application
-ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:8:5-24:19
+ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:8:5-25:19
 	android:label
 		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:8:18-50
 	android:theme
 		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:9:9-67
 activity#android.app.NativeActivity
-ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:13:9-23:20
+ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:13:9-24:20
 	android:label
 		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:14:17-49
 	android:configChanges
@@ -36,21 +36,21 @@ ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tut
 	android:name
 		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:13:19-60
 meta-data#android.app.lib_name
-ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:17:13-18:46
+ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:18:13-19:46
 	android:value
-		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:18:21-43
+		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:19:21-43
 	android:name
-		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:17:24-59
+		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:18:24-59
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:19:13-22:29
+ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:20:13-23:29
 action#android.intent.action.MAIN
-ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:20:17-69
+ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:21:17-69
 	android:name
-		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:20:25-66
+		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:21:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:21:17-77
+ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:22:17-77
 	android:name
-		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:21:27-74
+		ADDED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml:22:27-74
 uses-sdk
 INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/AndroidManifest.xml

@@ -98,7 +98,7 @@ bool CheckValidationLayerSupport()
     std::vector<VkLayerProperties> availableLayers(layercount);
     vkEnumerateInstanceLayerProperties(&layercount,availableLayers.data());
 
-    
+
 
     return false;
 }

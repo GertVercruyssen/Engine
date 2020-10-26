@@ -18,6 +18,6 @@ add_library(vktuts SHARED
 
 include_directories(${WRAPPER_DIR})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror -O2 -DVK_USE_PLATFORM_ANDROID_KHR")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -Werror -O2 -DVK_USE_PLATFORM_ANDROID_KHR")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 target_link_libraries(vktuts app-glue log android)

@@ -20,6 +20,7 @@
 #include <cstring>
 #include <string>
 #include <optional>
+#include <set>
 #include "vulkan_wrapper.h"
 
 // Android log function wrappers
@@ -47,10 +48,12 @@ struct VulkanDeviceInfo {
     VkInstance instance_;
     VkPhysicalDevice gpuDevice_;
     VkDevice device_;
-    uint32_t queueFamilyIndex_;
+    uint32_t queueGraphicsIndex_;
+    uint32_t queuePresentIndex_;
 
     VkSurfaceKHR surface_;
-    VkQueue queue_;
+    VkQueue graphicsQueue_;
+    VkQueue presentQueue_;
 };
 VulkanDeviceInfo device;
 
@@ -119,9 +122,10 @@ bool CheckValidationLayerSupport()
 }
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
 
     bool isCompleted() {
-        return graphicsFamily.has_value();
+        return graphicsFamily.has_value() && presentFamily.has_value();
     }
 };
 
@@ -136,7 +140,13 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice gpudevice)
     for(const auto& queueFamily : queueFamilyProperties) {
         if(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             indices.graphicsFamily = i;
-            device.queueFamilyIndex_ = i;
+            device.queueGraphicsIndex_ = i;
+        }
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(gpudevice, i, device.surface_, &presentSupport);
+        if(presentSupport) {
+            indices.presentFamily = i;
+            device.queuePresentIndex_ = i;
         }
         if(indices.isCompleted())
             break;
@@ -145,16 +155,28 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice gpudevice)
     return indices;
 }
 
-bool isDeviceSuitable(VkPhysicalDevice gpudevice)
+bool CheckDeviceExtensionsSupported(VkPhysicalDevice physicalDevice, std::vector<const char*> extensions) {
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr,&extensionCount, availableExtensions.data());
+    std::set<const char*> requiredExtensions (extensions.begin(), extensions.end());
+    for(const auto& extension : extensions) {
+        requiredExtensions.erase(extension);
+    }
+    return requiredExtensions.empty();
+}
+
+bool isDeviceSuitable(VkPhysicalDevice gpudevice, std::vector<const char*> extensions)
 {
-    VkPhysicalDeviceProperties deviceProperties;
-    VkPhysicalDeviceFeatures deviceFeatures;
-    vkGetPhysicalDeviceProperties(gpudevice, &deviceProperties);
-    vkGetPhysicalDeviceFeatures(gpudevice, &deviceFeatures);
     //engine specific requests go here, but for now we'll take any vulkan compatible gpu
     QueueFamilyIndices indices = findQueueFamilies(gpudevice);
-    return indices.isCompleted();
+
+    bool extensionsSupported = CheckDeviceExtensionsSupported(gpudevice, extensions);
+
+    return indices.isCompleted() && extensionsSupported;
 }
+
 /*
  * setImageLayout():
  *    Helper function to transition color buffer layout
@@ -220,7 +242,7 @@ void CreateVulkanDevice(ANativeWindow* platformWindow,
     VkPhysicalDevice gpu = VK_NULL_HANDLE;
     for(const auto& gpudevice : tmpGpus)
     {
-        if(isDeviceSuitable(gpudevice)) { //Pick the first suitable one (android is just first one mostly)
+        if(isDeviceSuitable(gpudevice, device_extensions)) { //Pick the first suitable one (android is just first one mostly)
             gpu = gpudevice;
             break;
         }
@@ -232,23 +254,26 @@ void CreateVulkanDevice(ANativeWindow* platformWindow,
     }
 
     // Create a logical device (vulkan device)
-    float priorities[] = {
-            1.0f,
-    };
-    VkDeviceQueueCreateInfo queueCreateInfo{
-            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-            .pNext = nullptr,
-            .flags = 0,
-            .queueCount = 1,
-            .queueFamilyIndex = device.queueFamilyIndex_,
-            .pQueuePriorities = priorities,
-    };
+    float priorities =  1.0f;
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::set<uint32_t> uniqueQueueFamilies = {device.queueGraphicsIndex_, device.queuePresentIndex_};
+
+    for(uint32_t queueFamily : uniqueQueueFamilies)
+    {
+        VkDeviceQueueCreateInfo queueCreateInfo {};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.flags = 0;
+        queueCreateInfo.pQueuePriorities = &priorities;
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
 
     VkDeviceCreateInfo deviceCreateInfo{};
     deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     deviceCreateInfo.pNext = nullptr;
-    deviceCreateInfo.queueCreateInfoCount = 1;
-    deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+    deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+    deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
     deviceCreateInfo.enabledLayerCount = 0; //deprecated
     deviceCreateInfo.ppEnabledLayerNames = nullptr; //deprecated
     deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(device_extensions.size());
@@ -257,7 +282,10 @@ void CreateVulkanDevice(ANativeWindow* platformWindow,
 
     CALL_VK(vkCreateDevice(device.gpuDevice_, &deviceCreateInfo, nullptr,
                            &device.device_));
-    vkGetDeviceQueue(device.device_, device.queueFamilyIndex_, 0, &device.queue_);
+
+    //these will probably always be the same, but lets make life diffcult for ourselves
+    vkGetDeviceQueue(device.device_, device.queueGraphicsIndex_, 0, &device.graphicsQueue_);
+    vkGetDeviceQueue(device.device_, device.queuePresentIndex_, 0, &device.presentQueue_);
 }
 
 void CreateSwapChain(void) {
@@ -306,7 +334,7 @@ void CreateSwapChain(void) {
             .imageArrayLayers = 1,
             .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
             .queueFamilyIndexCount = 1,
-            .pQueueFamilyIndices = &device.queueFamilyIndex_,
+            .pQueueFamilyIndices = &device.queueGraphicsIndex_,
             .presentMode = VK_PRESENT_MODE_FIFO_KHR,
             .oldSwapchain = VK_NULL_HANDLE,
             .clipped = VK_FALSE,
@@ -581,6 +609,7 @@ void DeleteVulkan(void) {
     vkDestroyRenderPass(device.device_, render.renderPass_, nullptr);
     DeleteSwapChain();
 
+    vkDestroySurfaceKHR(device.instance_, device.surface_, nullptr);
     vkDestroyDevice(device.device_, nullptr);
     vkDestroyInstance(device.instance_, nullptr);
 

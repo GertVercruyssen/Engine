@@ -1,1 +1,15 @@
-ninja: no work to do.
+ninja: Entering directory `/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a'
+[1/2] Building CXX object CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o
+FAILED: CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o 
+/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ --target=armv7-none-linux-androideabi24 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -Dvktuts_EXPORTS -I/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue -I../../../../src/main/vulkan_wrapper -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security   -std=c++17 -Wall -Werror -O2 -DVK_USE_PLATFORM_ANDROID_KHR -O0 -fno-limit-debug-info  -fPIC -MD -MT CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o -MF CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o.d -o CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o -c ../../../../src/main/jni/VulkanMain.cpp
+../../../../src/main/jni/VulkanMain.cpp:626:34: error: no member named 'queue_' in 'VulkanDeviceInfo'
+    CALL_VK(vkQueueSubmit(device.queue_, 1, &submit_info, render.fence_));
+                          ~~~~~~ ^
+../../../../src/main/jni/VulkanMain.cpp:37:22: note: expanded from macro 'CALL_VK'
+  if (VK_SUCCESS != (func)) {                                         \
+                     ^~~~
+../../../../src/main/jni/VulkanMain.cpp:643:30: error: no member named 'queue_' in 'VulkanDeviceInfo'
+    vkQueuePresentKHR(device.queue_, &presentInfo);
+                      ~~~~~~ ^
+2 errors generated.
+ninja: build stopped: subcommand failed.

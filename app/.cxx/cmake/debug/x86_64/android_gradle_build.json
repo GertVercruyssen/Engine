@@ -1,78 +1,84 @@
-
 {
-	"buildFiles" : 
-	[
-		"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/CMakeLists.txt"
-	],
-	"cFileExtensions" : [ "c" ],
-	"cleanCommands" : 
-	[
-		"/Users/gert/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64 --target clean"
-	],
-	"cppFileExtensions" : [ "cpp" ],
-	"libraries" : 
-	{
-		"app-glue-Debug-x86_64" : 
-		{
-			"abi" : "x86_64",
-			"artifactName" : "app-glue",
-			"buildCommand" : "/Users/gert/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64 --target app-glue",
-			"buildType" : "debug",
-			"files" : 
-			[
-				
-				{
-					"flags" : "  --target=x86_64-none-linux-android24 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -I/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue -I../../../../src/main/vulkan_wrapper  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
-					"src" : "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue/android_native_app_glue.c",
-					"workingDirectory" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64"
-				}
-			],
-			"output" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64/libapp-glue.a",
-			"toolchain" : "10807807498972823232"
-		},
-		"vktuts-Debug-x86_64" : 
-		{
-			"abi" : "x86_64",
-			"artifactName" : "vktuts",
-			"buildCommand" : "/Users/gert/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64 --target vktuts",
-			"buildType" : "debug",
-			"files" : 
-			[
-				
-				{
-					"flags" : "  --target=x86_64-none-linux-android24 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -Dvktuts_EXPORTS -I/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue -I../../../../src/main/vulkan_wrapper  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -std=c++11 -Wall -Werror -O2 -DVK_USE_PLATFORM_ANDROID_KHR -O0 -fno-limit-debug-info  -fPIC    -c ",
-					"src" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/jni/VulkanMain.cpp",
-					"workingDirectory" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64"
-				},
-				
-				{
-					"flags" : "  --target=x86_64-none-linux-android24 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -Dvktuts_EXPORTS -I/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue -I../../../../src/main/vulkan_wrapper  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -std=c++11 -Wall -Werror -O2 -DVK_USE_PLATFORM_ANDROID_KHR -O0 -fno-limit-debug-info  -fPIC    -c ",
-					"src" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/jni/AndroidMain.cpp",
-					"workingDirectory" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64"
-				},
-				
-				{
-					"flags" : "  --target=x86_64-none-linux-android24 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -Dvktuts_EXPORTS -I/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue -I../../../../src/main/vulkan_wrapper  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -std=c++11 -Wall -Werror -O2 -DVK_USE_PLATFORM_ANDROID_KHR -O0 -fno-limit-debug-info  -fPIC    -c ",
-					"src" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/jni/Engine.cpp",
-					"workingDirectory" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64"
-				},
-				
-				{
-					"flags" : "  --target=x86_64-none-linux-android24 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -Dvktuts_EXPORTS -I/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue -I../../../../src/main/vulkan_wrapper  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -std=c++11 -Wall -Werror -O2 -DVK_USE_PLATFORM_ANDROID_KHR -O0 -fno-limit-debug-info  -fPIC    -c ",
-					"src" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/vulkan_wrapper/vulkan_wrapper.cpp",
-					"workingDirectory" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64"
-				}
-			],
-			"output" : "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/cmake/debug/obj/x86_64/libvktuts.so",
-			"toolchain" : "10807807498972823232"
-		}
-	},
-	"toolchains" : 
-	{
-		"10807807498972823232" : 
-		{
-			"cCompilerExecutable" : "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
-			"cppCompilerExecutable" : "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
-		}
-	}
+  "stringTable": {
+    "0": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64",
+    "1": "--target=x86_64-none-linux-android24 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Dvktuts_EXPORTS -I/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue -I../../../../src/main/vulkan_wrapper -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -std=c++17 -Wall -Werror -O2 -DVK_USE_PLATFORM_ANDROID_KHR -O0 -fno-limit-debug-info -fPIC",
+    "2": "--target=x86_64-none-linux-android24 --gcc-toolchain=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -I/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue -I../../../../src/main/vulkan_wrapper -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIC"
+  },
+  "buildFiles": [
+    "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake",
+    "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/build/cmake/platforms.cmake",
+    "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64\" clean"
+  ],
+  "buildTargetsCommand": "/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja  -C \"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "app-glue-Debug-x86_64": {
+      "buildCommand": "/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64\" app-glue",
+      "buildType": "debug",
+      "toolchain": "3924922920",
+      "abi": "x86_64",
+      "artifactName": "app-glue",
+      "files": [
+        {
+          "src": "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/sources/android/native_app_glue/android_native_app_glue.c",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [],
+      "output": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64/libapp-glue.a",
+      "runtimeFiles": []
+    },
+    "vktuts-Debug-x86_64": {
+      "buildCommand": "/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64\" vktuts",
+      "buildType": "debug",
+      "toolchain": "3924922920",
+      "abi": "x86_64",
+      "artifactName": "vktuts",
+      "files": [
+        {
+          "src": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/jni/VulkanMain.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/jni/AndroidMain.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/jni/Engine.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/vulkan_wrapper/vulkan_wrapper.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [
+        {
+          "header": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/src/main/jni/Engine.h",
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "output": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/cmake/debug/obj/x86_64/libvktuts.so",
+      "runtimeFiles": []
+    }
+  },
+  "toolchains": {
+    "3924922920": {
+      "cCompilerExecutable": "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+      "cppCompilerExecutable": "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": [
+    "cpp"
+  ]
 }

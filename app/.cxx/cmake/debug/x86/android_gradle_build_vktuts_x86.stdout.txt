@@ -1,1 +1,2 @@
+ninja: Entering directory `/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86'
 ninja: no work to do.

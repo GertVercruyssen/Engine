@@ -1,22 +1,27 @@
 {
   "buildFiles": [
+    "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake",
+    "/Users/gert/Library/Android/sdk/ndk/21.3.6528147/build/cmake/platforms.cmake",
     "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/CMakeLists.txt"
   ],
   "cleanCommands": [
-    "/Users/gert/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64 --target clean"
+    "/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64\" clean"
   ],
+  "buildTargetsCommand": "/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja  -C \"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
   "libraries": {
     "app-glue-Debug-x86_64": {
       "artifactName": "app-glue",
-      "buildCommand": "/Users/gert/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64 --target app-glue",
+      "buildCommand": "/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64\" app-glue",
       "abi": "x86_64",
-      "output": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64/libapp-glue.a"
+      "output": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64/libapp-glue.a",
+      "runtimeFiles": []
     },
     "vktuts-Debug-x86_64": {
       "artifactName": "vktuts",
-      "buildCommand": "/Users/gert/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64 --target vktuts",
+      "buildCommand": "/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86_64\" vktuts",
       "abi": "x86_64",
-      "output": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/cmake/debug/obj/x86_64/libvktuts.so"
+      "output": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/cmake/debug/obj/x86_64/libvktuts.so",
+      "runtimeFiles": []
     }
   }
 }

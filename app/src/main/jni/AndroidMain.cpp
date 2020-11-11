@@ -28,7 +28,7 @@ void handle_cmd(android_app* app, int32_t cmd) {
           temp_engine->state->savedStateSize = sizeof(struct savedData);
           break;
     case APP_CMD_INIT_WINDOW:
-    {
+    {;
       // The window is being shown, get it ready.
       InitVulkan(app);
       break;

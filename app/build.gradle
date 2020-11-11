@@ -15,6 +15,12 @@ android {
                 abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             }
         }
+        shaders {
+            glslcArgs.addAll(['-c', '-g'])
+//            scopedArgs.create('lights') {
+//                glslcArgs.addAll(['-DLIGHT1=1', '-DLIGHT2=0'])
+//            }
+        }
     }
 
     externalNativeBuild {

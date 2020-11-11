@@ -95,6 +95,7 @@ VulkanRenderInfo render;
 
 // Android Native App pointer...
 android_app* androidAppCtx = nullptr;
+AAssetManager* assManager = nullptr;
 
 bool CheckValidationLayerSupport()
 {
@@ -186,6 +187,19 @@ void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
                     VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
                     VkPipelineStageFlags srcStages,
                     VkPipelineStageFlags destStages);
+
+//Helper function to load shaders
+//name example: "shaders/tri.vert.spv"
+std::vector<char> LoadShaderFile(const char* shaderName){
+    AAsset* file = AAssetManager_open(assManager, shaderName, AASSET_MODE_BUFFER);
+    size_t glslShaderLen = AAsset_getLength(file);
+    std::vector<char> glslShader;
+    glslShader.resize(glslShaderLen);
+
+    AAsset_read(file, static_cast<void*>(glslShader.data()), glslShaderLen);
+    AAsset_close(file);
+    return glslShader;
+}
 
 // Create vulkan device
 void CreateVulkanDevice(ANativeWindow* platformWindow,
@@ -388,6 +402,42 @@ void DeleteSwapChain(void) {
     }
     vkDestroySwapchainKHR(device.device_, swapchain.swapchain_, nullptr);
 }
+VkShaderModule CreateShaderModule(const std::vector<char>& code)
+{
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size();
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+    VkShaderModule shaderModule;
+    CALL_VK(vkCreateShaderModule(device.device_, &createInfo, nullptr, &shaderModule));
+
+    return shaderModule;
+}
+
+void CreateGraphicsPipeline() {
+    std::vector<char> vertShaderCode = LoadShaderFile("shaders/triangle.vert.spv");
+    std::vector<char> fragShaderCode = LoadShaderFile("shaders/triangle.frag.spv");
+    VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
+    VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
+
+    VkPipelineShaderStageCreateInfo vertShaderStageInfo {};
+    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.module = vertShaderModule;
+    vertShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.module = fragShaderModule;
+    fragShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+
+    vkDestroyShaderModule(device.device_, vertShaderModule, nullptr);
+    vkDestroyShaderModule(device.device_, fragShaderModule, nullptr);
+}
 
 void CreateFrameBuffers(VkRenderPass& renderPass, VkImageView depthView = VK_NULL_HANDLE) {
     // create image view for each swapchain image
@@ -442,6 +492,7 @@ void CreateFrameBuffers(VkRenderPass& renderPass, VkImageView depthView = VK_NUL
 //   upon return, vulkan is ready to draw frames
 bool InitVulkan(android_app* app) {
     androidAppCtx = app;
+    assManager = app->activity->assetManager;
 
     if (!InitVulkan()) {
         LOGW("Vulkan is unavailable, install vulkan and re-start");
@@ -463,6 +514,7 @@ bool InitVulkan(android_app* app) {
 
     CreateSwapChain();
 
+    CreateGraphicsPipeline();
     // -----------------------------------------------------------------
     // Create render pass
     VkAttachmentDescription attachmentDescriptions{
@@ -650,7 +702,7 @@ bool VulkanDrawFrame(const Engine* engine) {
             .pCommandBuffers = &render.cmdBuffer_[nextIndex],
             .signalSemaphoreCount = 0,
             .pSignalSemaphores = nullptr};
-    CALL_VK(vkQueueSubmit(device.queue_, 1, &submit_info, render.fence_));
+    CALL_VK(vkQueueSubmit(device.graphicsQueue_, 1, &submit_info, render.fence_));
     CALL_VK(
             vkWaitForFences(device.device_, 1, &render.fence_, VK_TRUE, 100000000));
 
@@ -667,7 +719,7 @@ bool VulkanDrawFrame(const Engine* engine) {
             .pWaitSemaphores = nullptr,
             .pResults = &result,
     };
-    vkQueuePresentKHR(device.queue_, &presentInfo);
+    vkQueuePresentKHR(device.presentQueue_, &presentInfo);
     return true;
 }
 

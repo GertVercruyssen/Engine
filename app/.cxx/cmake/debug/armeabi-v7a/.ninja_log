@@ -6,3 +6,10 @@
 0	2033	1603768419	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	36b74f10c2d23673
 721	2253	1603768420	libapp-glue.a	d1b3a60f7e734792
 2253	2438	1603768420	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	cdb20f888c5550ac
+34	3596	1605079241	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	36b74f10c2d23673
+3596	4306	1605079242	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	cdb20f888c5550ac
+16	1298	1605082838	CMakeFiles/vktuts.dir/src/main/jni/AndroidMain.cpp.o	52031dc401507f30
+4	2550	1605082839	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	36b74f10c2d23673
+2550	2928	1605082839	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	cdb20f888c5550ac
+4	3214	1605087641	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	36b74f10c2d23673
+3214	3930	1605087641	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	cdb20f888c5550ac

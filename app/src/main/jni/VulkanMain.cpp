@@ -384,14 +384,12 @@ void DeleteSwapChain(void) {
     for (int i = 0; i < swapchain.swapchainLength_; i++) {
         vkDestroyFramebuffer(device.device_, swapchain.framebuffers_[i], nullptr);
         vkDestroyImageView(device.device_, swapchain.displayViews_[i], nullptr);
-        vkDestroyImage(device.device_, swapchain.displayImages_[i], nullptr);
+        //vkDestroyImage(device.device_, swapchain.displayImages_[i], nullptr); //not necessary
     }
     vkDestroySwapchainKHR(device.device_, swapchain.swapchain_, nullptr);
 }
 
-void CreateFrameBuffers(VkRenderPass& renderPass,
-                        VkImageView depthView = VK_NULL_HANDLE) {
-
+void CreateFrameBuffers(VkRenderPass& renderPass, VkImageView depthView = VK_NULL_HANDLE) {
     // create image view for each swapchain image
     swapchain.displayViews_.resize(swapchain.swapchainLength_);
     for (uint32_t i = 0; i < swapchain.swapchainLength_; i++) {
@@ -401,21 +399,15 @@ void CreateFrameBuffers(VkRenderPass& renderPass,
                 .image = swapchain.displayImages_[i],
                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
                 .format = swapchain.displayFormat_,
-                .components =
-                        {
-                                .r = VK_COMPONENT_SWIZZLE_R,
-                                .g = VK_COMPONENT_SWIZZLE_G,
-                                .b = VK_COMPONENT_SWIZZLE_B,
-                                .a = VK_COMPONENT_SWIZZLE_A,
-                        },
-                .subresourceRange =
-                        {
-                                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                                .baseMipLevel = 0,
-                                .levelCount = 1,
-                                .baseArrayLayer = 0,
-                                .layerCount = 1,
-                        },
+                .components.r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .components.g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .components.b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .components.a = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .subresourceRange.baseMipLevel = 0,
+                .subresourceRange.levelCount = 1,
+                .subresourceRange.baseArrayLayer = 0,
+                .subresourceRange.layerCount = 1,
                 .flags = 0,
         };
         CALL_VK(vkCreateImageView(device.device_, &viewCreateInfo, nullptr,

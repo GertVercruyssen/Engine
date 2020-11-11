@@ -74,6 +74,7 @@ struct VulkanSwapchainInfo {
 
     VkExtent2D displaySize_;
     VkFormat displayFormat_;
+    VkPresentModeKHR presentMode_;
 
     // array of frame buffers and views
     std::vector<VkImage> displayImages_;
@@ -302,50 +303,80 @@ void CreateSwapChain(void) {
                                               &surfaceCapabilities);
     // Query the list of supported surface format and choose one we like
     uint32_t formatCount = 0;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device.gpuDevice_, device.surface_,
-                                         &formatCount, nullptr);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device.gpuDevice_, device.surface_,&formatCount, nullptr);
     VkSurfaceFormatKHR* formats = new VkSurfaceFormatKHR[formatCount];
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device.gpuDevice_, device.surface_,
-                                         &formatCount, formats);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device.gpuDevice_, device.surface_,&formatCount, formats);
     LOGI("Got %d formats", formatCount);
 
     uint32_t chosenFormat;
     for (chosenFormat = 0; chosenFormat < formatCount; chosenFormat++) {
-        if (formats[chosenFormat].format == VK_FORMAT_R8G8B8A8_UNORM) break;
+        if (formats[chosenFormat].format == VK_FORMAT_R8G8B8A8_UNORM) break; //might want to add additional formats for screens with hdr
     }
     assert(chosenFormat < formatCount);
 
+    //Querry the list of supported presentation modes and choose one we like
+    uint32_t presentCount = 0;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device.gpuDevice_,device.surface_, &presentCount, nullptr);
+    VkPresentModeKHR* presentModes = new VkPresentModeKHR[presentCount];
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device.gpuDevice_,device.surface_, &presentCount, presentModes);
+    LOGI("Got %d formats", presentCount);
+    uint32_t chosenPresent;
+    for(chosenPresent = 0; chosenPresent < presentCount; chosenPresent++) {
+        if(presentModes[chosenPresent] == VK_PRESENT_MODE_MAILBOX_KHR)
+            break;
+    }
+    if(chosenPresent == presentCount) {//No support for tripple buffering found, find alway supported Fifo
+        swapchain.presentMode_ = VK_PRESENT_MODE_FIFO_KHR;
+        LOGI("No triple buffering support found.");
+    }
     swapchain.displaySize_ = surfaceCapabilities.currentExtent;
     swapchain.displayFormat_ = formats[chosenFormat].format;
+    swapchain.presentMode_ = presentModes[chosenPresent];
 
     // **********************************************************
     // Create a swap chain (here we choose the minimum available number of surface
     // in the chain)
-    VkSwapchainCreateInfoKHR swapchainCreateInfo{
-            .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-            .pNext = nullptr,
-            .surface = device.surface_,
-            .minImageCount = surfaceCapabilities.minImageCount,
-            .imageFormat = formats[chosenFormat].format,
-            .imageColorSpace = formats[chosenFormat].colorSpace,
-            .imageExtent = surfaceCapabilities.currentExtent,
-            .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-            .preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
-            .imageArrayLayers = 1,
-            .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
-            .queueFamilyIndexCount = 1,
-            .pQueueFamilyIndices = &device.queueGraphicsIndex_,
-            .presentMode = VK_PRESENT_MODE_FIFO_KHR,
-            .oldSwapchain = VK_NULL_HANDLE,
-            .clipped = VK_FALSE,
-    };
-    CALL_VK(vkCreateSwapchainKHR(device.device_, &swapchainCreateInfo, nullptr,
-                                 &swapchain.swapchain_));
+    //TODO: wide color gamut support
+    //https://developer.android.com/training/wide-color-gamut#vulkan
 
+    uint32_t imageCount = surfaceCapabilities.minImageCount +1;
+    if(surfaceCapabilities.maxImageCount > 0 && imageCount > surfaceCapabilities.maxImageCount)
+        imageCount = surfaceCapabilities.maxImageCount;
+
+    VkSwapchainCreateInfoKHR swapchainCreateInfo{};
+    swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    swapchainCreateInfo.pNext = nullptr;
+    swapchainCreateInfo.surface = device.surface_;
+    swapchainCreateInfo.minImageCount = imageCount;
+    swapchainCreateInfo.imageFormat = formats[chosenFormat].format;
+    swapchainCreateInfo.imageColorSpace = formats[chosenFormat].colorSpace;
+    swapchainCreateInfo.imageExtent = surfaceCapabilities.currentExtent;
+    swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; //render straight to sawpchain, change this if you want to do post processing
+    swapchainCreateInfo.imageArrayLayers = 1;
+    uint32_t familyIndices[] = {device.queueGraphicsIndex_, device.queuePresentIndex_};
+    if(device.queueGraphicsIndex_ != device.queuePresentIndex_) {
+        swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+        swapchainCreateInfo.queueFamilyIndexCount = 2;
+        swapchainCreateInfo.pQueueFamilyIndices = familyIndices;
+    } else {
+        swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        swapchainCreateInfo.queueFamilyIndexCount = 0; // Optional
+        swapchainCreateInfo.pQueueFamilyIndices = nullptr; //Optional
+    }
+    swapchainCreateInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR; //i think this means do nothing
+    swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    swapchainCreateInfo.presentMode = swapchain.presentMode_;
+    swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
+    swapchainCreateInfo.clipped = VK_FALSE; //mobile phones don't have overlapping windows so this can be false
+
+    CALL_VK(vkCreateSwapchainKHR(device.device_, &swapchainCreateInfo, nullptr, &swapchain.swapchain_));
     // Get the length of the created swap chain
-    CALL_VK(vkGetSwapchainImagesKHR(device.device_, swapchain.swapchain_,
-                                    &swapchain.swapchainLength_, nullptr));
+    CALL_VK(vkGetSwapchainImagesKHR(device.device_, swapchain.swapchain_, &swapchain.swapchainLength_, nullptr));
+    swapchain.displayImages_.resize(swapchain.swapchainLength_);
+    CALL_VK(vkGetSwapchainImagesKHR(device.device_, swapchain.swapchain_, &swapchain.swapchainLength_, swapchain.displayImages_.data()));
+
     delete[] formats;
+    delete[] presentModes;
     LOGI("<-createSwapChain");
 }
 
@@ -360,18 +391,10 @@ void DeleteSwapChain(void) {
 
 void CreateFrameBuffers(VkRenderPass& renderPass,
                         VkImageView depthView = VK_NULL_HANDLE) {
-    // query display attachment to swapchain
-    uint32_t SwapchainImagesCount = 0;
-    CALL_VK(vkGetSwapchainImagesKHR(device.device_, swapchain.swapchain_,
-                                    &SwapchainImagesCount, nullptr));
-    swapchain.displayImages_.resize(SwapchainImagesCount);
-    CALL_VK(vkGetSwapchainImagesKHR(device.device_, swapchain.swapchain_,
-                                    &SwapchainImagesCount,
-                                    swapchain.displayImages_.data()));
 
     // create image view for each swapchain image
-    swapchain.displayViews_.resize(SwapchainImagesCount);
-    for (uint32_t i = 0; i < SwapchainImagesCount; i++) {
+    swapchain.displayViews_.resize(swapchain.swapchainLength_);
+    for (uint32_t i = 0; i < swapchain.swapchainLength_; i++) {
         VkImageViewCreateInfo viewCreateInfo = {
                 .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
                 .pNext = nullptr,

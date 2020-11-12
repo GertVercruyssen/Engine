@@ -36,6 +36,8 @@ void handle_cmd(android_app* app, int32_t cmd) {
     case APP_CMD_TERM_WINDOW:
       {
       // The window is being hidden or closed, clean it up.
+      //Wait to finish current draw order
+      WaitIdle();
       DeleteVulkan();
       break;
     }
@@ -90,8 +92,7 @@ void android_main(struct android_app* state) {
 
   // Main loop
   do {
-    if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr,
-                        &events, (void**)&source) >= 0) {
+    if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr, &events, (void**)&source) >= 0) {
       if (source != NULL) source->process(state, source);
     }
 

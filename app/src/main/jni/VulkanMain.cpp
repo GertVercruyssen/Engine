@@ -42,6 +42,9 @@ static const char* kTAG = "Vulkan-Engine";
   }
 
 // Global Variables ...
+const int MAX_FRAMES_IN_FLIGHT = 2;
+size_t currentFrame = 0;
+
 struct VulkanDeviceInfo {
     bool initialized_;
 
@@ -87,8 +90,9 @@ struct VulkanRenderInfo {
     VkRenderPass renderPass_;
     VkCommandPool cmdPool_;
     std::vector<VkCommandBuffer> commandBuffers;
-    VkSemaphore semaphore_;
-    VkFence fence_;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
     VkPipelineLayout pipelineLayout;
     VkPipeline pipeline;
 };
@@ -409,7 +413,6 @@ VkShaderModule CreateShaderModule(const std::vector<char>& code)
 }
 
 void CreateRenderPass() {
-
     VkAttachmentDescription attachmentDescriptions{
             .format = swapchain.displayFormat_,
             .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -429,6 +432,15 @@ void CreateRenderPass() {
             .colorAttachmentCount = 1,
             .pColorAttachments = &colourReference
     };
+
+    VkSubpassDependency dependency{};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask =VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
     VkRenderPassCreateInfo renderPassCreateInfo{
             .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
             .pNext = nullptr,
@@ -436,8 +448,12 @@ void CreateRenderPass() {
             .pAttachments = &attachmentDescriptions,
             .subpassCount = 1,
             .pSubpasses = &subpassDescription,
+            .dependencyCount = 1,
+            .pDependencies = &dependency
     };
     CALL_VK(vkCreateRenderPass(device.device_, &renderPassCreateInfo, nullptr, &render.renderPass_));
+
+
 }
 
 void CreateGraphicsPipeline() {
@@ -662,6 +678,23 @@ void CreateCommandBuffers() {
     }
 }
 
+void CreateSyncObjects() {
+    render.imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    render.renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    render.inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    for(size_t i =0; i<MAX_FRAMES_IN_FLIGHT;i++) {
+        CALL_VK(vkCreateSemaphore(device.device_, &semaphoreInfo, nullptr, &render.imageAvailableSemaphores[i]));
+        CALL_VK(vkCreateSemaphore(device.device_, &semaphoreInfo, nullptr, &render.renderFinishedSemaphores[i]));
+        CALL_VK(vkCreateFence(device.device_, & fenceInfo, nullptr, &render.inFlightFences[i]));
+    }
+}
+
 // InitVulkan:
 //   Initialize Vulkan Context when android application window is created
 //   upon return, vulkan is ready to draw frames
@@ -692,26 +725,7 @@ bool InitVulkan(android_app* app) {
     CreateFrameBuffers();
     CreateCommandPool();
     CreateCommandBuffers();
-
-    // We need to create a fence to be able, in the main loop, to wait for our
-    // draw command(s) to finish before swapping the framebuffers
-    VkFenceCreateInfo fenceCreateInfo{
-            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-            .pNext = nullptr,
-            .flags = 0,
-    };
-    CALL_VK(
-            vkCreateFence(device.device_, &fenceCreateInfo, nullptr, &render.fence_));
-
-    // We need to create a semaphore to be able to wait, in the main loop, for our
-    // framebuffer to be available for us before drawing.
-    VkSemaphoreCreateInfo semaphoreCreateInfo{
-            .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-            .pNext = nullptr,
-            .flags = 0,
-    };
-    CALL_VK(vkCreateSemaphore(device.device_, &semaphoreCreateInfo, nullptr,
-                              &render.semaphore_));
+    CreateSyncObjects();
 
     device.initialized_ = true;
     return true;
@@ -722,6 +736,12 @@ bool InitVulkan(android_app* app) {
 bool IsVulkanReady(void) { return device.initialized_; }
 
 void DeleteVulkan(void) {
+    for(size_t i = 0; i<MAX_FRAMES_IN_FLIGHT;i++) {
+        vkDestroySemaphore(device.device_, render.imageAvailableSemaphores[i], nullptr);
+        vkDestroySemaphore(device.device_, render.renderFinishedSemaphores[i], nullptr);
+        vkDestroyFence(device.device_, render.inFlightFences[i], nullptr);
+    }
+
     vkFreeCommandBuffers(device.device_, render.cmdPool_, render.commandBuffers.size(), render.commandBuffers.data());
     vkDestroyCommandPool(device.device_, render.cmdPool_, nullptr);
     vkDestroyRenderPass(device.device_, render.renderPass_, nullptr);
@@ -746,115 +766,41 @@ void DeleteVulkan(void) {
 
 // Draw one frame
 bool VulkanDrawFrame(const Engine* engine) {
-    uint32_t nextIndex;
-    // Get the framebuffer index we should draw in
-    CALL_VK(vkAcquireNextImageKHR(device.device_, swapchain.swapchain_,
-                                  UINT64_MAX, render.semaphore_, VK_NULL_HANDLE,
-                                  &nextIndex));
-    CALL_VK(vkResetFences(device.device_, 1, &render.fence_));
-    VkPipelineStageFlags waitStageMask =
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    VkSubmitInfo submit_info = {.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-            .pNext = nullptr,
-            .waitSemaphoreCount = 1,
-            .pWaitSemaphores = &render.semaphore_,
-            .pWaitDstStageMask = &waitStageMask,
-            .commandBufferCount = 1,
-            .pCommandBuffers = &render.commandBuffers[nextIndex],
-            .signalSemaphoreCount = 0,
-            .pSignalSemaphores = nullptr};
-    CALL_VK(vkQueueSubmit(device.graphicsQueue_, 1, &submit_info, render.fence_));
-    CALL_VK(
-            vkWaitForFences(device.device_, 1, &render.fence_, VK_TRUE, 100000000));
+    vkWaitForFences(device.device_, 1, &render.inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+    vkResetFences(device.device_, 1, &render.inFlightFences[currentFrame]);
 
-    LOGI("Drawing frames......");
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(device.device_,swapchain.swapchain_,UINT64_MAX,render.imageAvailableSemaphores[currentFrame],VK_NULL_HANDLE, &imageIndex);
 
-    VkResult result;
-    VkPresentInfoKHR presentInfo{
-            .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-            .pNext = nullptr,
-            .swapchainCount = 1,
-            .pSwapchains = &swapchain.swapchain_,
-            .pImageIndices = &nextIndex,
-            .waitSemaphoreCount = 0,
-            .pWaitSemaphores = nullptr,
-            .pResults = &result,
-    };
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    VkSemaphore waitSemaphores[] = {render.imageAvailableSemaphores[currentFrame]};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &render.commandBuffers[imageIndex];
+    VkSemaphore signalSemaphores[] = {render.renderFinishedSemaphores[currentFrame]};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+    CALL_VK(vkQueueSubmit(device.graphicsQueue_, 1, &submitInfo, render.inFlightFences[currentFrame]));
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+    VkSwapchainKHR swapChains[] = {swapchain.swapchain_};
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
     vkQueuePresentKHR(device.presentQueue_, &presentInfo);
+
+    currentFrame = (currentFrame +1) % MAX_FRAMES_IN_FLIGHT;
     return true;
 }
 
-/*
- * setImageLayout():
- *    Helper function to transition color buffer layout
- */
-void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
-                    VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
-                    VkPipelineStageFlags srcStages,
-                    VkPipelineStageFlags destStages) {
-    VkImageMemoryBarrier imageMemoryBarrier = {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .pNext = NULL,
-            .srcAccessMask = 0,
-            .dstAccessMask = 0,
-            .oldLayout = oldImageLayout,
-            .newLayout = newImageLayout,
-            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-            .image = image,
-            .subresourceRange =
-                    {
-                            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                            .baseMipLevel = 0,
-                            .levelCount = 1,
-                            .baseArrayLayer = 0,
-                            .layerCount = 1,
-                    },
-    };
-
-    switch (oldImageLayout) {
-        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            break;
-
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            break;
-
-        case VK_IMAGE_LAYOUT_PREINITIALIZED:
-            imageMemoryBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-            break;
-
-        default:
-            break;
-    }
-
-    switch (newImageLayout) {
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            break;
-
-        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-            break;
-
-        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-            break;
-
-        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            break;
-
-        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-            imageMemoryBarrier.dstAccessMask =
-                    VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-            break;
-
-        default:
-            break;
-    }
-
-    vkCmdPipelineBarrier(cmdBuffer, srcStages, destStages, 0, 0, NULL, 0, NULL, 1,
-                         &imageMemoryBarrier);
+void WaitIdle() {
+    vkDeviceWaitIdle(device.device_);
 }

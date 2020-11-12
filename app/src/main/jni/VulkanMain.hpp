@@ -29,6 +29,9 @@ bool IsVulkanReady(void);
 // Ask Vulkan to Render a frame
 bool VulkanDrawFrame(const Engine* engine);
 
+// Wait for the Drawloop to be idle
+void WaitIdle();
+
 #endif // __VULKANMAIN_HPP__
 
 

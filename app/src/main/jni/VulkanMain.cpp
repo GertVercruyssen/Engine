@@ -111,6 +111,7 @@ VulkanRenderInfo render;
 // Android Native App pointer...
 android_app* androidAppCtx = nullptr;
 AAssetManager* assManager = nullptr;
+bool framebufferResized = false;
 
 bool CheckValidationLayerSupport()
 {
@@ -623,7 +624,7 @@ void CreateImageViews() {
     }
 }
 
-void CreateFrameBuffers(VkImageView depthView = VK_NULL_HANDLE) {
+void CreateFramebuffers(VkImageView depthView = VK_NULL_HANDLE) {
     // create a framebuffer from each swapchain image
     swapchain.framebuffers_.resize(swapchain.swapchainLength_);
     for (uint32_t i = 0; i < swapchain.swapchainLength_; i++) {
@@ -676,7 +677,7 @@ void CreateCommandBuffers() {
         renderPassInfo.framebuffer = swapchain.framebuffers_[i];
         renderPassInfo.renderArea.offset = {0,0};
         renderPassInfo.renderArea.extent = swapchain.displaySize_;
-        VkClearValue backgroundcolor{{{0.0f, 0.0f, 0.0f, 1.0f}}}; //TODO: test this
+        VkClearValue backgroundcolor{{{0.0f, 0.0f, 0.0f, 1.0f}}}; //TODO: mess with this
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues = &backgroundcolor;
         vkCmdBeginRenderPass(render.commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -733,7 +734,7 @@ bool InitVulkan(android_app* app) {
     CreateImageViews();
     CreateRenderPass();
     CreateGraphicsPipeline();
-    CreateFrameBuffers();
+    CreateFramebuffers();
     CreateCommandPool();
     CreateCommandBuffers();
     CreateSyncObjects();
@@ -746,28 +747,30 @@ bool InitVulkan(android_app* app) {
 //    native app poll to see if we are ready to draw...
 bool IsVulkanReady(void) { return device.initialized_; }
 
+void CleanupSwapchain() {
+    for(auto framebuffer : swapchain.framebuffers_)
+        vkDestroyFramebuffer(device.device_, framebuffer, nullptr);
+    vkFreeCommandBuffers(device.device_, render.cmdPool_, (uint32_t)render.commandBuffers.size(), render.commandBuffers.data());
+    vkDestroyPipeline(device.device_, render.pipeline, nullptr);
+    vkDestroyPipelineLayout(device.device_,render.pipelineLayout,nullptr);
+    vkDestroyRenderPass(device.device_, render.renderPass_, nullptr);
+    for(auto imageview : swapchain.displayViews_)
+        vkDestroyImageView(device.device_, imageview, nullptr);
+    for(auto displayImage : swapchain.displayImages_)
+        vkDestroyImage(device.device_, displayImage, nullptr);
+    vkDestroySwapchainKHR(device.device_, swapchain.swapchain_, nullptr);
+}
+
 void DeleteVulkan(void) {
+    CleanupSwapchain();
+
     for(size_t i = 0; i<MAX_FRAMES_IN_FLIGHT;i++) {
         vkDestroySemaphore(device.device_, render.imageAvailableSemaphores[i], nullptr);
         vkDestroySemaphore(device.device_, render.renderFinishedSemaphores[i], nullptr);
         vkDestroyFence(device.device_, render.inFlightFences[i], nullptr);
     }
 
-    vkFreeCommandBuffers(device.device_, render.cmdPool_, render.commandBuffers.size(), render.commandBuffers.data());
     vkDestroyCommandPool(device.device_, render.cmdPool_, nullptr);
-    vkDestroyRenderPass(device.device_, render.renderPass_, nullptr);
-    vkDestroyPipelineLayout(device.device_,render.pipelineLayout,nullptr);
-    vkDestroyPipeline(device.device_, render.pipeline, nullptr);
-
-    //delete swapchain
-    for(auto framebuffer : swapchain.framebuffers_)
-        vkDestroyFramebuffer(device.device_, framebuffer, nullptr);
-    for(auto imageview : swapchain.displayViews_)
-        vkDestroyImageView(device.device_, imageview, nullptr);
-    for(auto displayImage : swapchain.displayImages_)
-        vkDestroyImage(device.device_, displayImage, nullptr);
-    vkDestroySwapchainKHR(device.device_, swapchain.swapchain_, nullptr);
-
     vkDestroySurfaceKHR(device.instance_, device.surface_, nullptr);
     vkDestroyDevice(device.device_, nullptr);
     vkDestroyInstance(device.instance_, nullptr);
@@ -775,12 +778,32 @@ void DeleteVulkan(void) {
     device.initialized_ = false;
 }
 
+void RecreateSwapchain() { //TODO: check if this gets called twice during phone rotation
+    vkDeviceWaitIdle(device.device_);
+
+    CleanupSwapchain();
+
+    CreateSwapChain();
+    CreateImageViews();
+    CreateRenderPass();
+    CreateGraphicsPipeline();
+    CreateFramebuffers();
+    CreateCommandBuffers();
+}
+
 // Draw one frame
 bool VulkanDrawFrame(const Engine* engine) {
     vkWaitForFences(device.device_, 1, &render.inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    vkAcquireNextImageKHR(device.device_,swapchain.swapchain_,UINT64_MAX,render.imageAvailableSemaphores[currentFrame],VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(device.device_,swapchain.swapchain_,UINT64_MAX,render.imageAvailableSemaphores[currentFrame],VK_NULL_HANDLE, &imageIndex);
+    if(result == VK_ERROR_OUT_OF_DATE_KHR){
+        RecreateSwapchain();
+        return false;
+    } else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        LOGE("Failed to acquire swapchain image!");
+        assert(false);
+    }
 
     // Check if a previous frame is using this image (i.e. there is its fence to wait on)
     if(render.imagesInFlight[imageIndex] != VK_NULL_HANDLE)
@@ -814,7 +837,15 @@ bool VulkanDrawFrame(const Engine* engine) {
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr;
-    vkQueuePresentKHR(device.presentQueue_, &presentInfo);
+    result = vkQueuePresentKHR(device.presentQueue_, &presentInfo);
+
+    if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized){
+        framebufferResized = false;
+        RecreateSwapchain();
+    } else if(result != VK_SUCCESS) {
+        LOGE("Failed to present swapchain image!");
+        assert(false);
+    }
 
     currentFrame = (currentFrame +1) % MAX_FRAMES_IN_FLIGHT;
     return true;
@@ -822,4 +853,8 @@ bool VulkanDrawFrame(const Engine* engine) {
 
 void WaitIdle() {
     vkDeviceWaitIdle(device.device_);
+}
+
+void VulkanResize() { //TODO: check if this gets called twice during flip
+    framebufferResized = true;
 }

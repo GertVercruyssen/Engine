@@ -29,3 +29,6 @@
 3581	3954	1605174689	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	cdb20f888c5550ac
 9	3442	1605233999	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	36b74f10c2d23673
 3443	3867	1605234000	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	cdb20f888c5550ac
+9	1517	1605238390	CMakeFiles/vktuts.dir/src/main/jni/AndroidMain.cpp.o	52031dc401507f30
+3	3195	1605238391	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	36b74f10c2d23673
+3195	3577	1605238392	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libvktuts.so	cdb20f888c5550ac

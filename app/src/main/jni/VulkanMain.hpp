@@ -32,6 +32,9 @@ bool VulkanDrawFrame(const Engine* engine);
 // Wait for the Drawloop to be idle
 void WaitIdle();
 
+// window has changed (rotated), recreate swapchain
+void VulkanResize();
+
 #endif // __VULKANMAIN_HPP__
 
 

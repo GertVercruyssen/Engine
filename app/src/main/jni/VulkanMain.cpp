@@ -71,6 +71,15 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
+void EvalVK(VkResult result, char* errormsg) {
+    if(result != VK_SUCCESS)
+    {
+        LOGE("Error evaluating VK call");
+        __android_log_print(ANDROID_LOG_ERROR,kTAG,"%s", errormsg);
+        assert(false);
+    }
+}
+
 struct VulkanSwapchainInfo {
     VkSwapchainKHR swapchain_;
     uint32_t swapchainLength_;
@@ -93,6 +102,7 @@ struct VulkanRenderInfo {
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
+    std::vector<VkFence>imagesInFlight;
     VkPipelineLayout pipelineLayout;
     VkPipeline pipeline;
 };
@@ -682,6 +692,7 @@ void CreateSyncObjects() {
     render.imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     render.renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     render.inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+    render.imagesInFlight.resize(swapchain.displayImages_.size(), VK_NULL_HANDLE);
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
     VkFenceCreateInfo fenceInfo{};
@@ -767,10 +778,15 @@ void DeleteVulkan(void) {
 // Draw one frame
 bool VulkanDrawFrame(const Engine* engine) {
     vkWaitForFences(device.device_, 1, &render.inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-    vkResetFences(device.device_, 1, &render.inFlightFences[currentFrame]);
 
     uint32_t imageIndex;
     vkAcquireNextImageKHR(device.device_,swapchain.swapchain_,UINT64_MAX,render.imageAvailableSemaphores[currentFrame],VK_NULL_HANDLE, &imageIndex);
+
+    // Check if a previous frame is using this image (i.e. there is its fence to wait on)
+    if(render.imagesInFlight[imageIndex] != VK_NULL_HANDLE)
+        vkWaitForFences(device.device_, 1, &render.imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+    // Mark the image as now being in use by this frame
+    render.imagesInFlight[imageIndex] = render.inFlightFences[currentFrame];
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -784,6 +800,9 @@ bool VulkanDrawFrame(const Engine* engine) {
     VkSemaphore signalSemaphores[] = {render.renderFinishedSemaphores[currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
+
+
+    vkResetFences(device.device_, 1, &render.inFlightFences[currentFrame]);
     CALL_VK(vkQueueSubmit(device.graphicsQueue_, 1, &submitInfo, render.inFlightFences[currentFrame]));
 
     VkPresentInfoKHR presentInfo{};

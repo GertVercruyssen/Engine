@@ -27,3 +27,5 @@
 2302	2658	1605172654	../../../../build/intermediates/cmake/debug/obj/x86_64/libvktuts.so	e8f213b32e881e34
 2	1996	1605174696	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	e4ba4a82e1ea177c
 1996	2321	1605174697	../../../../build/intermediates/cmake/debug/obj/x86_64/libvktuts.so	e8f213b32e881e34
+3	2147	1605234007	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	e4ba4a82e1ea177c
+2147	2500	1605234007	../../../../build/intermediates/cmake/debug/obj/x86_64/libvktuts.so	e8f213b32e881e34

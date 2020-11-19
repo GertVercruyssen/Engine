@@ -4,7 +4,6 @@
 #include <android_native_app_glue.h>
 #include "vulkan_wrapper.h"
 #include <vector>
-#include <array>
 #include <optional>
 #include "../glm/vec2.hpp"
 #include "../glm/vec3.hpp"
@@ -12,25 +11,6 @@
 struct Vertex {
     glm::vec2 pos;
     glm::vec3 color;
-
-    static VkVertexInputBindingDescription GetBindingDescription(){
-        VkVertexInputBindingDescription bindingDescription {};
-        bindingDescription.binding = 0;
-        bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-        return bindingDescription;
-    }
-
-    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
-        attributeDescriptions[0].binding = 0;
-        attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[0].offset = offsetof(Vertex,pos);
-
-        return attributeDescriptions;
-    }
 };
 
 struct VulkanDeviceInfo {
@@ -134,16 +114,10 @@ private:
     AAssetManager* assManager = nullptr;
     bool framebufferResized = false;
 
-    const std::vector<Vertex> vertices = {
-            {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
-    };
-
 #ifdef NDEBUG
-    const bool enableValidationLayers = false;
+    const static bool enableValidationLayers = false;
 #else
-    const bool enableValidationLayers = true;
+    const static bool enableValidationLayers = true;
 #endif
     //validation layers
     const std::vector<const char*> validationLayers = {

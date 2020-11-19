@@ -51,7 +51,7 @@ void VulkanEngine::EvalVK(VkResult result, char* errormsg) {
 
 bool VulkanEngine::CheckValidationLayerSupport()
 {
-    unsigned int layercount;
+    unsigned int layercount = 0;
     vkEnumerateInstanceLayerProperties(&layercount, nullptr);
 
     std::vector<VkLayerProperties> availableLayers(layercount);
@@ -165,14 +165,13 @@ void VulkanEngine::CreateVulkanDevice(ANativeWindow* platformWindow, VkApplicati
         instanceCreateInfo.enabledLayerCount = 0;
         instanceCreateInfo.ppEnabledLayerNames = nullptr;
     }
-
     CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &device.instance_));
+    
     VkAndroidSurfaceCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
     createInfo.pNext = nullptr;
     createInfo.flags = 0;
     createInfo.window = platformWindow;
-
     CALL_VK(vkCreateAndroidSurfaceKHR(device.instance_, &createInfo, nullptr,
                                       &device.surface_));
     // Find one GPU to use:
@@ -267,7 +266,7 @@ void VulkanEngine::CreateSwapChain(void) {
     vkGetPhysicalDeviceSurfacePresentModesKHR(device.gpuDevice_,device.surface_, &presentCount, nullptr);
     VkPresentModeKHR* presentModes = new VkPresentModeKHR[presentCount];
     vkGetPhysicalDeviceSurfacePresentModesKHR(device.gpuDevice_,device.surface_, &presentCount, presentModes);
-    LOGI("Got %d formats", presentCount);
+    LOGI("Got %d presentation modes", presentCount);
     uint32_t chosenPresent;
     for(chosenPresent = 0; chosenPresent < presentCount; chosenPresent++) {
         if(presentModes[chosenPresent] == VK_PRESENT_MODE_MAILBOX_KHR)
@@ -312,7 +311,7 @@ void VulkanEngine::CreateSwapChain(void) {
         swapchainCreateInfo.pQueueFamilyIndices = nullptr; //Optional
     }
     swapchainCreateInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR; //i think this means do nothing
-    swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR; //VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR didn't work on android;
     swapchainCreateInfo.presentMode = swapchain.presentMode_;
     swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
     swapchainCreateInfo.clipped = VK_FALSE; //mobile phones don't have overlapping windows so this can be false
@@ -603,7 +602,7 @@ void VulkanEngine::CreateCommandBuffers() {
         vkCmdBindPipeline(render.commandBuffers[i],VK_PIPELINE_BIND_POINT_GRAPHICS, render.pipeline);
         vkCmdDraw(render.commandBuffers[i],3,1,0,0);
         vkCmdEndRenderPass(render.commandBuffers[i]);
-        CALL_VK(vkEndCommandBuffer(render.commandBuffers[1]));
+        CALL_VK(vkEndCommandBuffer(render.commandBuffers[i]));
     }
 }
 
@@ -778,9 +777,9 @@ void VulkanEngine::VulkanResize() { //TODO: check if this gets called twice duri
 }
 
 VulkanEngine::VulkanEngine() {
- //??
+    //??
 }
 
 VulkanEngine::~VulkanEngine() {
- //??
+    //??
 }

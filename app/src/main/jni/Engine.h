@@ -13,8 +13,8 @@
  */
 struct savedData {
     unsigned int counter;
-    int x;
-    int y;
+    float x;
+    float y;
     bool animating;
 };
 

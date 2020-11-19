@@ -9,8 +9,8 @@ Engine::Engine()
     vulkanEngine = new VulkanEngine();
 
     data.counter = 0;
-    data.x = 0;
-    data.y = 0;
+    data.x = 0.0f;
+    data.y = 0.0f;
     data.animating = 1;
 }
 

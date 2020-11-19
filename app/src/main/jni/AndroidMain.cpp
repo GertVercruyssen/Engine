@@ -74,17 +74,16 @@ static int32_t engine_handle_input(struct android_app* app, AInputEvent* event) 
 }
 
 void android_main(struct android_app* state) {
-    Engine* engine = new Engine();
+    Engine* engine;
+    //memset(&engine, 0, sizeof(engine));
+    engine = new Engine();
 
     if (state->savedState != nullptr) {
         // We are starting with a previous saved state; restore from it.
         engine->data = (*(struct savedData*)state->savedState);
     }
-
-    memset(&engine, 0, sizeof(engine));
-    state->userData = &engine;
+    state->userData = engine;
     state->onInputEvent = engine_handle_input;
-
     engine->state = state;
     // Set the callback to process system events
     state->onAppCmd = handle_cmd;
@@ -96,7 +95,7 @@ void android_main(struct android_app* state) {
     // Main loop
     do {
         if (ALooper_pollAll(engine->vulkanEngine->IsVulkanReady() ? 1 : 0, nullptr, &events, (void**)&source) >= 0) {
-            if (source != NULL) source->process(state, source);
+            if (source != nullptr) source->process(state, source);
         }
 
         // render if vulkan is ready and we be drawing

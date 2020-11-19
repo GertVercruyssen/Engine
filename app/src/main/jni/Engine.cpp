@@ -6,6 +6,8 @@
 
 Engine::Engine()
 {
+    vulkanEngine = new VulkanEngine();
+
     data.counter = 0;
     data.x = 0;
     data.y = 0;
@@ -14,5 +16,5 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-
+    delete vulkanEngine;
 }

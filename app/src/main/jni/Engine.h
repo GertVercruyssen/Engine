@@ -6,6 +6,7 @@
 #define TUTORIAL04_FIRST_WINDOW_ENGINE_H
 
 #include <android_native_app_glue.h>
+#include "VulkanMain.hpp"
 
 /**
  * Our saved state data.
@@ -23,6 +24,7 @@ public:
     virtual ~Engine();
     android_app* state; //state received from Android
     savedData data; //the game data kept between switching apps
+    VulkanEngine* vulkanEngine; //The actual graphics code
 private:
 
 };

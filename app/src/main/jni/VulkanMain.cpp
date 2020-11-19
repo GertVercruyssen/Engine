@@ -14,14 +14,10 @@
 
 #include "VulkanMain.hpp"
 #include <android/log.h>
-#include <android_native_app_glue.h>
 #include <cassert>
-#include <vector>
 #include <cstring>
 #include <string>
-#include <optional>
 #include <set>
-#include "vulkan_wrapper.h"
 
 // Android log function wrappers
 static const char* kTAG = "Vulkan-Engine";
@@ -42,78 +38,18 @@ static const char* kTAG = "Vulkan-Engine";
   }
 
 // Global Variables ...
-const int MAX_FRAMES_IN_FLIGHT = 2;
-size_t currentFrame = 0;
 
-struct VulkanDeviceInfo {
-    bool initialized_;
 
-    VkInstance instance_;
-    VkPhysicalDevice gpuDevice_;
-    VkDevice device_;
-    uint32_t queueGraphicsIndex_;
-    uint32_t queuePresentIndex_;
 
-    VkSurfaceKHR surface_;
-    VkQueue graphicsQueue_;
-    VkQueue presentQueue_;
-};
-VulkanDeviceInfo device;
-
-//validation layers
-const std::vector<const char*> validationLayers = {
-        "VK_LAYER_KHRONOS_validation"
-};
-
-#ifdef NDEBUG
-const bool enableValidationLayers = false;
-#else
-const bool enableValidationLayers = true;
-#endif
-
-void EvalVK(VkResult result, char* errormsg) {
-    if(result != VK_SUCCESS)
-    {
+void VulkanEngine::EvalVK(VkResult result, char* errormsg) {
+    if (result != VK_SUCCESS) {
         LOGE("Error evaluating VK call");
-        __android_log_print(ANDROID_LOG_ERROR,kTAG,"%s", errormsg);
+        __android_log_print(ANDROID_LOG_ERROR, kTAG, "%s", errormsg);
         assert(false);
     }
 }
 
-struct VulkanSwapchainInfo {
-    VkSwapchainKHR swapchain_;
-    uint32_t swapchainLength_;
-
-    VkExtent2D displaySize_;
-    VkFormat displayFormat_;
-    VkPresentModeKHR presentMode_;
-
-    // array of frame buffers and views
-    std::vector<VkImage> displayImages_;
-    std::vector<VkImageView> displayViews_;
-    std::vector<VkFramebuffer> framebuffers_;
-};
-VulkanSwapchainInfo swapchain;
-
-struct VulkanRenderInfo {
-    VkRenderPass renderPass_;
-    VkCommandPool cmdPool_;
-    std::vector<VkCommandBuffer> commandBuffers;
-    std::vector<VkSemaphore> imageAvailableSemaphores;
-    std::vector<VkSemaphore> renderFinishedSemaphores;
-    std::vector<VkFence> inFlightFences;
-    std::vector<VkFence>imagesInFlight;
-    VkPipelineLayout pipelineLayout;
-    VkPipeline pipeline;
-};
-VulkanRenderInfo render;
-
-// Android Native App pointer...
-android_app* androidAppCtx = nullptr;
-AAssetManager* assManager = nullptr;
-bool framebufferResized = false;
-
-bool CheckValidationLayerSupport()
+bool VulkanEngine::CheckValidationLayerSupport()
 {
     unsigned int layercount;
     vkEnumerateInstanceLayerProperties(&layercount, nullptr);
@@ -138,16 +74,8 @@ bool CheckValidationLayerSupport()
 
     return true;
 }
-struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
 
-    bool isCompleted() {
-        return graphicsFamily.has_value() && presentFamily.has_value();
-    }
-};
-
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice gpudevice)
+QueueFamilyIndices VulkanEngine::findQueueFamilies(VkPhysicalDevice gpudevice)
 {
     QueueFamilyIndices indices;
     uint32_t queueFamilyCount;
@@ -173,7 +101,7 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice gpudevice)
     return indices;
 }
 
-bool CheckDeviceExtensionsSupported(VkPhysicalDevice physicalDevice, std::vector<const char*> extensions) {
+bool VulkanEngine::CheckDeviceExtensionsSupported(VkPhysicalDevice physicalDevice, std::vector<const char*> extensions) {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
@@ -185,7 +113,7 @@ bool CheckDeviceExtensionsSupported(VkPhysicalDevice physicalDevice, std::vector
     return requiredExtensions.empty();
 }
 
-bool isDeviceSuitable(VkPhysicalDevice gpudevice, std::vector<const char*> extensions)
+bool VulkanEngine::isDeviceSuitable(VkPhysicalDevice gpudevice, std::vector<const char*> extensions)
 {
     //engine specific requests go here, but for now we'll take any vulkan compatible gpu
     QueueFamilyIndices indices = findQueueFamilies(gpudevice);
@@ -195,18 +123,9 @@ bool isDeviceSuitable(VkPhysicalDevice gpudevice, std::vector<const char*> exten
     return indices.isCompleted() && extensionsSupported;
 }
 
-/*
- * setImageLayout():
- *    Helper function to transition color buffer layout
- */
-void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
-                    VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
-                    VkPipelineStageFlags srcStages,
-                    VkPipelineStageFlags destStages);
-
 //Helper function to load shaders
 //name example: "shaders/tri.vert.spv"
-std::vector<char> LoadShaderFile(const char* shaderName){
+std::vector<char> VulkanEngine::LoadShaderFile(const char* shaderName) {
     AAsset* file = AAssetManager_open(assManager, shaderName, AASSET_MODE_BUFFER);
     size_t glslShaderLen = AAsset_getLength(file);
     std::vector<char> glslShader;
@@ -218,8 +137,7 @@ std::vector<char> LoadShaderFile(const char* shaderName){
 }
 
 // Create vulkan device
-void CreateVulkanDevice(ANativeWindow* platformWindow,
-                        VkApplicationInfo* appInfo) {
+void VulkanEngine::CreateVulkanDevice(ANativeWindow* platformWindow, VkApplicationInfo* appInfo) {
     std::vector<const char*> instance_extensions;
     std::vector<const char*> device_extensions;
 
@@ -319,7 +237,7 @@ void CreateVulkanDevice(ANativeWindow* platformWindow,
     vkGetDeviceQueue(device.device_, device.queuePresentIndex_, 0, &device.presentQueue_);
 }
 
-void CreateSwapChain(void) {
+void VulkanEngine::CreateSwapChain(void) {
     LOGI("->createSwapChain");
     memset(&swapchain, 0, sizeof(swapchain));
 
@@ -410,7 +328,7 @@ void CreateSwapChain(void) {
     LOGI("<-createSwapChain");
 }
 
-VkShaderModule CreateShaderModule(const std::vector<char>& code)
+VkShaderModule VulkanEngine::CreateShaderModule(const std::vector<char>& code)
 {
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -423,7 +341,7 @@ VkShaderModule CreateShaderModule(const std::vector<char>& code)
     return shaderModule;
 }
 
-void CreateRenderPass() {
+void VulkanEngine::CreateRenderPass() {
     VkAttachmentDescription attachmentDescriptions{
             .format = swapchain.displayFormat_,
             .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -467,7 +385,7 @@ void CreateRenderPass() {
 
 }
 
-void CreateGraphicsPipeline() {
+void VulkanEngine::CreateGraphicsPipeline() {
     std::vector<char> vertShaderCode = LoadShaderFile("shaders/triangle.vert.spv");
     std::vector<char> fragShaderCode = LoadShaderFile("shaders/triangle.frag.spv");
     VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
@@ -600,7 +518,7 @@ void CreateGraphicsPipeline() {
     vkDestroyShaderModule(device.device_, fragShaderModule, nullptr);
 }
 
-void CreateImageViews() {
+void VulkanEngine::CreateImageViews() {
     // create image view for each swapchain image
     swapchain.displayViews_.resize(swapchain.swapchainLength_);
     for (uint32_t i = 0; i < swapchain.swapchainLength_; i++) {
@@ -624,7 +542,7 @@ void CreateImageViews() {
     }
 }
 
-void CreateFramebuffers(VkImageView depthView = VK_NULL_HANDLE) {
+void VulkanEngine::CreateFramebuffers(VkImageView depthView = VK_NULL_HANDLE) {
     // create a framebuffer from each swapchain image
     swapchain.framebuffers_.resize(swapchain.swapchainLength_);
     for (uint32_t i = 0; i < swapchain.swapchainLength_; i++) {
@@ -644,7 +562,7 @@ void CreateFramebuffers(VkImageView depthView = VK_NULL_HANDLE) {
     }
 }
 
-void CreateCommandPool() {
+void VulkanEngine::CreateCommandPool() {
     VkCommandPoolCreateInfo cmdPoolCreateInfo{
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext = nullptr,
@@ -654,7 +572,7 @@ void CreateCommandPool() {
     CALL_VK(vkCreateCommandPool(device.device_, &cmdPoolCreateInfo, nullptr, &render.cmdPool_));
 }
 
-void CreateCommandBuffers() {
+void VulkanEngine::CreateCommandBuffers() {
     render.commandBuffers.resize(swapchain.framebuffers_.size());
 
     VkCommandBufferAllocateInfo allocInfo{};
@@ -689,7 +607,7 @@ void CreateCommandBuffers() {
     }
 }
 
-void CreateSyncObjects() {
+void VulkanEngine::CreateSyncObjects() {
     render.imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     render.renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     render.inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -710,14 +628,14 @@ void CreateSyncObjects() {
 // InitVulkan:
 //   Initialize Vulkan Context when android application window is created
 //   upon return, vulkan is ready to draw frames
-bool InitVulkan(android_app* app) {
+bool VulkanEngine::InitVulkan(android_app* app) {
     androidAppCtx = app;
     assManager = app->activity->assetManager;
 
-    if (!InitVulkan()) {
-        LOGW("Vulkan is unavailable, install vulkan and re-start");
-        return false;
-    }
+//    if (!InitVulkan()) {
+//        LOGW("Vulkan is unavailable, install vulkan and re-start");
+//        return false;
+//    }
 
     VkApplicationInfo appInfo = {
             .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -745,9 +663,9 @@ bool InitVulkan(android_app* app) {
 
 // IsVulkanReady():
 //    native app poll to see if we are ready to draw...
-bool IsVulkanReady(void) { return device.initialized_; }
+bool VulkanEngine::IsVulkanReady(void) { return device.initialized_; }
 
-void CleanupSwapchain() {
+void VulkanEngine::CleanupSwapchain() {
     for(auto framebuffer : swapchain.framebuffers_)
         vkDestroyFramebuffer(device.device_, framebuffer, nullptr);
     vkFreeCommandBuffers(device.device_, render.cmdPool_, (uint32_t)render.commandBuffers.size(), render.commandBuffers.data());
@@ -761,7 +679,7 @@ void CleanupSwapchain() {
     vkDestroySwapchainKHR(device.device_, swapchain.swapchain_, nullptr);
 }
 
-void DeleteVulkan(void) {
+void VulkanEngine::DeleteVulkan(void) {
     CleanupSwapchain();
 
     for(size_t i = 0; i<MAX_FRAMES_IN_FLIGHT;i++) {
@@ -778,7 +696,7 @@ void DeleteVulkan(void) {
     device.initialized_ = false;
 }
 
-void RecreateSwapchain() { //TODO: check if this gets called twice during phone rotation
+void VulkanEngine::RecreateSwapchain() { //TODO: check if this gets called twice during phone rotation
     vkDeviceWaitIdle(device.device_);
 
     CleanupSwapchain();
@@ -792,7 +710,7 @@ void RecreateSwapchain() { //TODO: check if this gets called twice during phone 
 }
 
 // Draw one frame
-bool VulkanDrawFrame(const Engine* engine) {
+bool VulkanEngine::VulkanDrawFrame() {
     vkWaitForFences(device.device_, 1, &render.inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
@@ -851,10 +769,18 @@ bool VulkanDrawFrame(const Engine* engine) {
     return true;
 }
 
-void WaitIdle() {
+void VulkanEngine::WaitIdle() {
     vkDeviceWaitIdle(device.device_);
 }
 
-void VulkanResize() { //TODO: check if this gets called twice during flip
+void VulkanEngine::VulkanResize() { //TODO: check if this gets called twice during flip
     framebufferResized = true;
+}
+
+VulkanEngine::VulkanEngine() {
+ //??
+}
+
+VulkanEngine::~VulkanEngine() {
+ //??
 }

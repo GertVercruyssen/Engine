@@ -66,7 +66,9 @@
         }
       ],
       "output": "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/build/intermediates/cmake/debug/obj/x86/libvktuts.so",
-      "runtimeFiles": []
+      "runtimeFiles": [
+        "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/x86/libapp-glue.a"
+      ]
     }
   },
   "toolchains": {

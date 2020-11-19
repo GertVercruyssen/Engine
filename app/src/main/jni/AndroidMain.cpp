@@ -30,15 +30,15 @@ void handle_cmd(android_app* app, int32_t cmd) {
         case APP_CMD_INIT_WINDOW:
         {;
             // The window is being shown, get it ready.
-            InitVulkan(app);
+            temp_engine->vulkanEngine->InitVulkan(app);
             break;
         }
         case APP_CMD_TERM_WINDOW:
         {
             // The window is being hidden or closed, clean it up.
             //Wait to finish current draw order
-            WaitIdle();
-            DeleteVulkan();
+            temp_engine->vulkanEngine->WaitIdle();
+            temp_engine->vulkanEngine->DeleteVulkan();
             break;
         }
         case APP_CMD_GAINED_FOCUS:
@@ -51,7 +51,7 @@ void handle_cmd(android_app* app, int32_t cmd) {
             break;
         case APP_CMD_CONTENT_RECT_CHANGED: //TODO: check if this actually gets called on rotation
             //when our screen gets rotated, recreate the swapchain in vulkan
-            VulkanResize();
+            temp_engine->vulkanEngine->VulkanResize();
         default:
             __android_log_print(ANDROID_LOG_INFO, "Vulkan Tutorials",
                                 "event not handled: %d", cmd);
@@ -74,19 +74,18 @@ static int32_t engine_handle_input(struct android_app* app, AInputEvent* event) 
 }
 
 void android_main(struct android_app* state) {
-    Engine* engine;
-
-    memset(&engine, 0, sizeof(engine));
-    state->userData = &engine;
-    state->onInputEvent = engine_handle_input;
-    engine->state = state;
+    Engine* engine = new Engine();
 
     if (state->savedState != nullptr) {
         // We are starting with a previous saved state; restore from it.
         engine->data = (*(struct savedData*)state->savedState);
-    } else {
-        engine = new Engine();
     }
+
+    memset(&engine, 0, sizeof(engine));
+    state->userData = &engine;
+    state->onInputEvent = engine_handle_input;
+
+    engine->state = state;
     // Set the callback to process system events
     state->onAppCmd = handle_cmd;
 
@@ -96,15 +95,15 @@ void android_main(struct android_app* state) {
 
     // Main loop
     do {
-        if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr, &events, (void**)&source) >= 0) {
+        if (ALooper_pollAll(engine->vulkanEngine->IsVulkanReady() ? 1 : 0, nullptr, &events, (void**)&source) >= 0) {
             if (source != NULL) source->process(state, source);
         }
 
         // render if vulkan is ready and we be drawing
-        if (IsVulkanReady() && engine->data.animating) {
-            VulkanDrawFrame(engine);
+        if (engine->vulkanEngine->IsVulkanReady() && engine->data.animating) {
+            engine->vulkanEngine->VulkanDrawFrame();
         }
     } while (state->destroyRequested == 0);
 
-    //TODO: test delete engine;
+    delete engine;
 }

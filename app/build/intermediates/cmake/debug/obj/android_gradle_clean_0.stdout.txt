@@ -1,0 +1,6 @@
+ninja: Entering directory `/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a'
+[0/1] Re-running CMake...
+-- Configuring incomplete, errors occurred!
+See also "/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/CMakeOutput.log".
+FAILED: build.ninja 
+/Users/gert/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake -H/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app -B/Users/gert/AndroidStudioProjects/android-vulkan-tutorials-master/tutorial04_first_window/app/.cxx/cmake/debug/armeabi-v7a

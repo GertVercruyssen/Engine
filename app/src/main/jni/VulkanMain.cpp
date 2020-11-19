@@ -136,6 +136,18 @@ std::vector<char> VulkanEngine::LoadShaderFile(const char* shaderName) {
     return glslShader;
 }
 
+uint32_t VulkanEngine::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(device.gpuDevice_,&memProperties);
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+    LOGE("failed to find suitable memory type!");
+    return 0;
+}
+
 // Create vulkan device
 void VulkanEngine::CreateVulkanDevice(ANativeWindow* platformWindow, VkApplicationInfo* appInfo) {
     std::vector<const char*> instance_extensions;
@@ -166,7 +178,7 @@ void VulkanEngine::CreateVulkanDevice(ANativeWindow* platformWindow, VkApplicati
         instanceCreateInfo.ppEnabledLayerNames = nullptr;
     }
     CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &device.instance_));
-    
+
     VkAndroidSurfaceCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
     createInfo.pNext = nullptr;
@@ -404,12 +416,14 @@ void VulkanEngine::CreateGraphicsPipeline() {
 
     VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
+    auto bindingDescription = Vertex::getBindingDescription();
+    auto attributeDescriptions = Vertex::getAttributeDescriptions();
     VkPipelineVertexInputStateCreateInfo vertexInputInfo {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+    vertexInputInfo.vertexBindingDescriptionCount = 1;
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+    vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
     VkPipelineInputAssemblyStateCreateInfo assemblyStateInfo{};
     assemblyStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -571,6 +585,31 @@ void VulkanEngine::CreateCommandPool() {
     CALL_VK(vkCreateCommandPool(device.device_, &cmdPoolCreateInfo, nullptr, &render.cmdPool_));
 }
 
+void VulkanEngine::CreateVertexBuffer() {
+    VkBufferCreateInfo bufferInfo{};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    CALL_VK(vkCreateBuffer(device.device_, &bufferInfo,nullptr,&render.vertexBuffer));
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device.device_,render.vertexBuffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    CALL_VK(vkAllocateMemory(device.device_,&allocInfo,nullptr, &render.vertexBufferMemory));
+    vkBindBufferMemory(device.device_, render.vertexBuffer, render.vertexBufferMemory, 0);
+
+    void* data;
+    vkMapMemory(device.device_, render.vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+    memcpy(data, vertices.data(), (size_t) bufferInfo.size);
+    vkUnmapMemory(device.device_, render.vertexBufferMemory);
+}
+
 void VulkanEngine::CreateCommandBuffers() {
     render.commandBuffers.resize(swapchain.framebuffers_.size());
 
@@ -600,6 +639,11 @@ void VulkanEngine::CreateCommandBuffers() {
         vkCmdBeginRenderPass(render.commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
         vkCmdBindPipeline(render.commandBuffers[i],VK_PIPELINE_BIND_POINT_GRAPHICS, render.pipeline);
+
+        VkBuffer vertexBuffers[] = {render.vertexBuffer};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(render.commandBuffers[i], 0, 1, vertexBuffers, offsets);
+
         vkCmdDraw(render.commandBuffers[i],3,1,0,0);
         vkCmdEndRenderPass(render.commandBuffers[i]);
         CALL_VK(vkEndCommandBuffer(render.commandBuffers[i]));
@@ -653,6 +697,7 @@ bool VulkanEngine::InitVulkan(android_app* app) {
     CreateGraphicsPipeline();
     CreateFramebuffers();
     CreateCommandPool();
+    CreateVertexBuffer();
     CreateCommandBuffers();
     CreateSyncObjects();
 
@@ -680,6 +725,9 @@ void VulkanEngine::CleanupSwapchain() {
 
 void VulkanEngine::DeleteVulkan(void) {
     CleanupSwapchain();
+
+    vkDestroyBuffer(device.device_, render.vertexBuffer, nullptr);
+    vkFreeMemory(device.device_, render.vertexBufferMemory, nullptr);
 
     for(size_t i = 0; i<MAX_FRAMES_IN_FLIGHT;i++) {
         vkDestroySemaphore(device.device_, render.imageAvailableSemaphores[i], nullptr);
@@ -783,3 +831,4 @@ VulkanEngine::VulkanEngine() {
 VulkanEngine::~VulkanEngine() {
     //??
 }
+

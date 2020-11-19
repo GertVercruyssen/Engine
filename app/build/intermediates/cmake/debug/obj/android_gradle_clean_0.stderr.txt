@@ -1,0 +1,5 @@
+CMake Error: Target glm has dependency information when it shouldn't.
+Your cache is probably stale. Please remove the entry
+  glm_LIB_DEPENDS
+from the cache.
+ninja: error: rebuilding 'build.ninja': subcommand failed

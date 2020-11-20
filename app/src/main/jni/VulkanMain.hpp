@@ -73,6 +73,8 @@ struct VulkanRenderInfo {
     VkPipeline pipeline;
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
 };
 
 struct QueueFamilyIndices {
@@ -124,11 +126,14 @@ private:
     void CreateFramebuffers(VkImageView depthView);
     void CreateCommandPool();
     void CreateVertexBuffer();
+    void CreateIndexBuffer();
     void CreateCommandBuffers();
     void CreateSyncObjects();
     void CleanupSwapchain();
     void RecreateSwapchain();
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+    void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+    void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
     const int MAX_FRAMES_IN_FLIGHT = 2;
     size_t currentFrame = 0;
@@ -140,9 +145,13 @@ private:
     bool framebufferResized = false;
 
     const std::vector<Vertex> vertices = {
-            {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    };
+    const std::vector<uint16_t> indexes = {
+            0, 1, 2, 2, 3, 0
     };
 
 #ifdef NDEBUG

@@ -26,3 +26,7 @@
 3291	3655	1605779731	../../../../build/intermediates/cmake/debug/obj/x86/libvktuts.so	954d870b256771d5
 1	2386	1605779834	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	b02876d0d7a7fc1f
 2387	2726	1605779835	../../../../build/intermediates/cmake/debug/obj/x86/libvktuts.so	954d870b256771d5
+17	1428	1605859860	CMakeFiles/vktuts.dir/src/main/jni/AndroidMain.cpp.o	795d3251165df3a7
+18	1429	1605859860	CMakeFiles/vktuts.dir/src/main/jni/Engine.cpp.o	407c80aaa228f55e
+16	2850	1605859861	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	b02876d0d7a7fc1f
+2850	3235	1605859861	../../../../build/intermediates/cmake/debug/obj/x86/libvktuts.so	954d870b256771d5

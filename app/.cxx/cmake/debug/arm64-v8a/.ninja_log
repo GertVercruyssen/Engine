@@ -90,3 +90,7 @@
 3276	4038	1605779728	../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libvktuts.so	e8ee9fd5f58d1a69
 4	2741	1605779831	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	54b6eb633f0ac6b4
 2741	3366	1605779832	../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libvktuts.so	e8ee9fd5f58d1a69
+18	1468	1605859856	CMakeFiles/vktuts.dir/src/main/jni/Engine.cpp.o	50d2cb36af17dd9b
+17	1498	1605859856	CMakeFiles/vktuts.dir/src/main/jni/AndroidMain.cpp.o	37dd5ffbc95e0fc5
+16	3074	1605859857	CMakeFiles/vktuts.dir/src/main/jni/VulkanMain.cpp.o	54b6eb633f0ac6b4
+3074	3824	1605859858	../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libvktuts.so	e8ee9fd5f58d1a69
